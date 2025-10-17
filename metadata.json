@@ -1,0 +1,7 @@
+{
+  "name": "Resumaker",
+  "description": "An intelligent resume builder that uses AI to analyze your profile, provide a strength score, suggest improvements, and generate a professional resume tailored to your target job. Now with an AI Mock Interview Simulator.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
