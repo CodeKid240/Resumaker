@@ -42,7 +42,6 @@ export const InterviewPanel: React.FC<InterviewPanelProps> = ({ userData, onEndI
     const conversationEndRef = useRef<HTMLDivElement>(null);
     const isStoppingRef = useRef(false);
     
-    // Use a ref to hold the latest conversation state to avoid stale closures in callbacks
     const conversationRef = useRef(conversation);
     useEffect(() => {
         conversationRef.current = conversation;
@@ -139,7 +138,6 @@ export const InterviewPanel: React.FC<InterviewPanelProps> = ({ userData, onEndI
             chatRef.current = chat;
             setStatus('in_progress');
 
-            // Get the first message from the AI
             const response = await chat.sendMessage({ message: "Hello, I'm ready to begin." });
             addTurn({ speaker: 'ai', text: response.text });
         } catch (err) {
@@ -171,28 +169,31 @@ export const InterviewPanel: React.FC<InterviewPanelProps> = ({ userData, onEndI
     const stopSession = useCallback(async () => {
         if (isStoppingRef.current) return;
         isStoppingRef.current = true;
-
+    
         setStatus('processing');
-
+    
         if (mode === 'voice') {
             if (mediaStreamRef.current) {
                 mediaStreamRef.current.getTracks().forEach(track => track.stop());
+                mediaStreamRef.current = null;
             }
             if (audioProcessorRef.current) {
                 audioProcessorRef.current.disconnect();
+                audioProcessorRef.current = null;
             }
             if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-                audioContextRef.current.close();
+                await audioContextRef.current.close();
+                audioContextRef.current = null;
             }
             if (sessionRef.current) {
                 sessionRef.current.close();
+                sessionRef.current = null;
             }
-            sessionRef.current = null;
             sessionPromiseRef.current = null;
         }
         
         chatRef.current = null;
-
+    
         try {
             const finalFeedback = await getInterviewFeedback(conversationRef.current);
             setFeedback(finalFeedback);
@@ -204,15 +205,23 @@ export const InterviewPanel: React.FC<InterviewPanelProps> = ({ userData, onEndI
         }
     }, [mode]);
     
+    const statusRef = useRef(status);
+    statusRef.current = status;
+
+    const stopSessionRef = useRef(stopSession);
+    stopSessionRef.current = stopSession;
+
     useEffect(() => {
-        // This effect now correctly handles cleanup ONLY on component unmount.
-        // The `stopSession` function is stable because it no longer depends on `conversation` state.
+        // This effect's cleanup runs ONLY when the component unmounts.
+        // It uses a ref to get the latest `stopSession` function, fixing bugs
+        // related to stale closures and preventing the cleanup from running
+        // during other state changes (like the mode changing).
         return () => {
-            if (status === 'in_progress' || status === 'connecting') {
-                stopSession();
+            if (statusRef.current === 'in_progress' || statusRef.current === 'connecting') {
+                stopSessionRef.current();
             }
         };
-    }, [status, stopSession]);
+    }, []); // Empty dependency array ensures this is an unmount effect only.
 
     const renderContent = () => {
         switch (status) {

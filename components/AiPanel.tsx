@@ -6,7 +6,8 @@ import { CareerRoadmap } from './CareerRoadmap';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { ClipboardIcon } from './icons/ClipboardIcon';
 import { DownloadIcon } from './icons/DownloadIcon';
-import { generatePdf } from '../services/fileGenerator';
+import { PaintBrushIcon } from './icons/PaintBrushIcon';
+import { generatePdf, PDF_STYLES } from '../services/fileGenerator';
 import { MicrophoneIcon } from './icons/MicrophoneIcon';
 
 
@@ -53,6 +54,7 @@ const WelcomeMessage: React.FC = () => (
 
 export const AiPanel: React.FC<AiPanelProps> = ({ userData, aiResult, isLoading, error, onStartInterview }) => {
   const [copied, setCopied] = useState(false);
+  const [pdfStyle, setPdfStyle] = useState<string>(PDF_STYLES[0]);
 
   const handleCopyToClipboard = () => {
     if(aiResult?.generatedResume) {
@@ -68,7 +70,7 @@ export const AiPanel: React.FC<AiPanelProps> = ({ userData, aiResult, isLoading,
 
   const handleDownloadPdf = () => {
     if (aiResult?.generatedResume) {
-        generatePdf(aiResult.generatedResume, userData);
+        generatePdf(aiResult.generatedResume, userData, pdfStyle);
     }
   };
   
@@ -118,17 +120,32 @@ export const AiPanel: React.FC<AiPanelProps> = ({ userData, aiResult, isLoading,
                 <h2 className="text-2xl font-semibold text-slate-100 mb-3">Generated Resume</h2>
                 <pre className="bg-slate-800 p-4 rounded-md border border-slate-700 text-sm text-slate-300 whitespace-pre-wrap font-mono leading-relaxed">{aiResult.generatedResume}</pre>
                 
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-                    <button 
-                        onClick={handleDownloadPdf} 
-                        className="flex items-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        title="Download as PDF"
-                    >
-                        <DownloadIcon className="w-5 h-5"/>
-                        Download PDF
-                    </button>
+                <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <button 
+                            onClick={handleDownloadPdf} 
+                            className="flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            title="Download as PDF"
+                        >
+                            <DownloadIcon className="w-5 h-5"/>
+                            Download PDF
+                        </button>
+                        <div className="relative flex items-center">
+                           <PaintBrushIcon className="w-5 h-5 text-slate-400 absolute left-3 pointer-events-none" />
+                           <select
+                                value={pdfStyle}
+                                onChange={(e) => setPdfStyle(e.target.value)}
+                                className="w-full sm:w-auto appearance-none bg-slate-800 border border-slate-600 text-slate-100 rounded-md py-2 pl-10 pr-4 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                aria-label="Select PDF style"
+                           >
+                               {PDF_STYLES.map(style => (
+                                   <option key={style} value={style}>{style}</option>
+                               ))}
+                           </select>
+                        </div>
+                    </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 justify-end">
                         <button onClick={handleCopyToClipboard} className="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-blue-400" title="Copy to Clipboard">
                             <ClipboardIcon className="w-4 h-4"/>
                             {copied ? 'Copied!' : 'Copy to Clipboard'}
