@@ -39,6 +39,9 @@ export const SAMPLE_RESUMES: { label: string; data: UserData }[] = [
       projects: [
         { id: 'proj1', name: 'Project Pulse', url: 'github.com/alexj/pulse', description: '- A real-time project management dashboard built with React, Node.js, and WebSockets.\n- Features collaborative task tracking, notifications, and progress visualization.' }
       ],
+      references: [
+        { id: 'ref1', name: 'Dr. Emily Carter', company: 'Innovate Co.', title: 'CTO', email: 'emily.c@innovate.co', phone: '(555) 111-2222' }
+      ],
       signature: ''
     }
   },
@@ -62,6 +65,9 @@ export const SAMPLE_RESUMES: { label: string; data: UserData }[] = [
       ],
       projects: [
         { id: 'proj1', name: 'PM Portfolio Website', url: 'samlee-pm.com', description: '- Personal website showcasing product case studies, including problem statements, user research, and outcomes.' }
+      ],
+      references: [
+        { id: 'ref1', name: 'David Chen', company: 'FutureGadget Labs', title: 'Head of Engineering', email: 'david.chen@futuregadget.com', phone: '(555) 222-3333' }
       ],
       signature: ''
     }
@@ -87,6 +93,9 @@ export const SAMPLE_RESUMES: { label: string; data: UserData }[] = [
       projects: [
         { id: 'proj1', name: 'CityExplore App Concept', url: 'behance.net/mariagarcia/cityexplore', description: '- A mobile app concept designed to help tourists discover local attractions.\n- Project includes user personas, journey maps, wireframes, and a high-fidelity interactive prototype.' }
       ],
+      references: [
+        { id: 'ref1', name: 'John Miller', company: 'Creative Solutions', title: 'Head of Product', email: 'john.miller@creative.com', phone: '(555) 333-4444' }
+      ],
       signature: ''
     }
   },
@@ -110,6 +119,9 @@ export const SAMPLE_RESUMES: { label: string; data: UserData }[] = [
       ],
       projects: [
         { id: 'proj1', name: 'Personal Marketing Blog', url: 'marketmusings.com', description: '- A blog covering topics in SEO and content marketing, attracting over 10,000 monthly visitors.' }
+      ],
+      references: [
+          { id: 'ref1', name: 'Sarah Lee', company: 'GrowthHackers Agency', title: 'CEO', email: 'sarah.lee@ghagency.com', phone: '(555) 444-5555' }
       ],
       signature: ''
     }

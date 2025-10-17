@@ -24,6 +24,7 @@ const App: React.FC = () => {
     experience: [],
     education: [],
     projects: [],
+    references: [],
     signature: ''
   });
   const [aiResult, setAiResult] = useState<AiResult | null>(null);
@@ -68,7 +69,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     // This effect runs after the component renders. If dataToAnalyze is set,
-    // it means we've just switched views from the landing page and `userData` is now updated.
+    // it means we've switched views from the landing page and `userData` is now updated.
     // We can now safely call handleAnalyze, which will use the new `userData` state.
     if (dataToAnalyze) {
         handleAnalyze();
@@ -104,6 +105,7 @@ const App: React.FC = () => {
         experience: [],
         education: [],
         projects: [],
+        references: [],
         signature: ''
       });
       setAiResult(null);

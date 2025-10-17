@@ -133,6 +133,7 @@ export const generateFullResume = async (userData: UserData, summary: string): P
             6. Work Experience (most recent first)
             7. Personal Projects
             8. Education
+            9. References
         - For Work Experience, use the format:
             Job Title | Company
             Start Date - End Date
@@ -143,12 +144,16 @@ export const generateFullResume = async (userData: UserData, summary: string): P
             - Bullet point description
         - For Education, use the format:
             Institution Name | Degree / Field of Study | Graduation Date
+        - For References, use this format for each reference:
+            Reference Name, Title at Company
+            Email: [email] | Phone: [phone]
+            (Only include the Phone part if a phone number is provided in the data)
         - For Technical Skills, list them as a comma-separated string under the heading "Technical Skills".
         - For Soft Skills, list them as a comma-separated string under the heading "Soft Skills".
-        - If either skills category is empty, omit that section entirely.
+        - If a section (skills, projects, references, etc.) is empty, omit that section entirely.
         - Ensure the formatting is clean, professional, and easy to read.
         - Do not include any introductory text like "Here is the resume:". Just output the resume text directly.
-        - The name should be on the first line. Contact info on the second. Summary section starts with "Summary". The sections for skills, experience, projects, and education should start with their respective titles.
+        - The name should be on the first line. Contact info on the second. Summary section starts with "Summary". The sections for skills, experience, projects, education, and references should start with their respective titles.
     `;
 
     try {
@@ -162,6 +167,7 @@ export const generateFullResume = async (userData: UserData, summary: string): P
         return null;
     }
 };
+
 
 // --- Interview Feature Functions ---
 

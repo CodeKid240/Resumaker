@@ -120,6 +120,18 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({ userData, setUserData, o
       setUserData(prev => ({ ...prev, projects: prev.projects.filter(proj => proj.id !== id) }));
   };
 
+  const addReference = () => {
+      setUserData(prev => ({
+          ...prev,
+          references: [...prev.references, { id: Date.now().toString(), name: '', company: '', title: '', email: '', phone: '' }]
+      }));
+  };
+
+  const removeReference = (id: string) => {
+      setUserData(prev => ({ ...prev, references: prev.references.filter(ref => ref.id !== id) }));
+  };
+
+
   return (
     <div className="space-y-6">
       <Section title="Target Role">
@@ -159,74 +171,57 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({ userData, setUserData, o
       </Section>
 
       <Section title="Skills">
-        <div className="space-y-6">
-          {/* --- Technical Skills --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-3">Technical Skills</h3>
-            <div className="flex items-center gap-2 mb-3">
-              <Input
-                label="Add a technical skill"
-                id="technical-skill-input"
+            <h3 className="text-lg font-semibold text-slate-200 mb-2">Technical Skills</h3>
+            <div className="flex gap-2">
+              <input
+                type="text"
                 value={currentTechnicalSkill}
                 onChange={(e) => setCurrentTechnicalSkill(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddTechnicalSkill()}
                 placeholder="e.g., React"
+                className="flex-grow px-3 py-2 bg-slate-800 border border-slate-600 text-slate-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
               />
-              <button type="button" onClick={handleAddTechnicalSkill} className="mt-6 shrink-0 bg-slate-700 text-slate-200 p-2 rounded-md hover:bg-slate-600 border border-slate-600">
-                <PlusIcon className="w-5 h-5" />
-              </button>
+              <button onClick={handleAddTechnicalSkill} className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"><PlusIcon className="w-5 h-5"/></button>
             </div>
-            <div className="flex flex-wrap gap-1 mb-4">
-                {PRESET_TECHNICAL_SKILLS.map(skill => (
-                    <button key={skill} onClick={() => addSkill(skill, 'technical')} className="text-xs bg-slate-700/50 border border-slate-600 text-slate-300 px-2 py-1 rounded-md hover:bg-slate-600 hover:text-white transition-colors">
-                        {skill}
-                    </button>
-                ))}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PRESET_TECHNICAL_SKILLS.filter(s => !userData.technicalSkills.includes(s)).slice(0, 5).map(skill => (
+                <button key={skill} onClick={() => addSkill(skill, 'technical')} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full hover:bg-slate-600">+ {skill}</button>
+              ))}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {userData.technicalSkills.map(skill => (
-                <span key={skill} className="flex items-center bg-blue-900/50 text-blue-300 text-sm font-medium px-2.5 py-1 rounded-full border border-blue-700">
+                <span key={skill} className="flex items-center gap-1 bg-blue-900/50 text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
                   {skill}
-                  <button onClick={() => removeSkill(skill, 'technical')} className="ml-2 text-blue-400 hover:text-blue-200">
-                    &times;
-                  </button>
+                  <button onClick={() => removeSkill(skill, 'technical')} className="text-blue-300 hover:text-white"><TrashIcon className="w-3 h-3"/></button>
                 </span>
               ))}
             </div>
           </div>
-          
-          <hr className="border-slate-700" />
-
-          {/* --- Soft Skills --- */}
           <div>
-            <h3 className="text-lg font-semibold text-slate-200 mb-3">Soft Skills</h3>
-            <div className="flex items-center gap-2 mb-3">
-              <Input
-                label="Add a soft skill"
-                id="soft-skill-input"
+            <h3 className="text-lg font-semibold text-slate-200 mb-2">Soft Skills</h3>
+             <div className="flex gap-2">
+              <input
+                type="text"
                 value={currentSoftSkill}
                 onChange={(e) => setCurrentSoftSkill(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddSoftSkill()}
-                placeholder="e.g., Communication"
+                placeholder="e.g., Teamwork"
+                className="flex-grow px-3 py-2 bg-slate-800 border border-slate-600 text-slate-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm placeholder-slate-500"
               />
-              <button type="button" onClick={handleAddSoftSkill} className="mt-6 shrink-0 bg-slate-700 text-slate-200 p-2 rounded-md hover:bg-slate-600 border border-slate-600">
-                <PlusIcon className="w-5 h-5" />
-              </button>
+              <button onClick={handleAddSoftSkill} className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700"><PlusIcon className="w-5 h-5"/></button>
             </div>
-            <div className="flex flex-wrap gap-1 mb-4">
-                {PRESET_SOFT_SKILLS.map(skill => (
-                    <button key={skill} onClick={() => addSkill(skill, 'soft')} className="text-xs bg-slate-700/50 border border-slate-600 text-slate-300 px-2 py-1 rounded-md hover:bg-slate-600 hover:text-white transition-colors">
-                        {skill}
-                    </button>
-                ))}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PRESET_SOFT_SKILLS.filter(s => !userData.softSkills.includes(s)).slice(0, 5).map(skill => (
+                <button key={skill} onClick={() => addSkill(skill, 'soft')} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-full hover:bg-slate-600">+ {skill}</button>
+              ))}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {userData.softSkills.map(skill => (
-                <span key={skill} className="flex items-center bg-teal-900/50 text-teal-300 text-sm font-medium px-2.5 py-1 rounded-full border border-teal-700">
+                <span key={skill} className="flex items-center gap-1 bg-sky-900/50 text-sky-200 text-sm font-medium px-3 py-1 rounded-full">
                   {skill}
-                  <button onClick={() => removeSkill(skill, 'soft')} className="ml-2 text-teal-400 hover:text-teal-200">
-                    &times;
-                  </button>
+                  <button onClick={() => removeSkill(skill, 'soft')} className="text-sky-300 hover:text-white"><TrashIcon className="w-3 h-3"/></button>
                 </span>
               ))}
             </div>
@@ -235,79 +230,102 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({ userData, setUserData, o
       </Section>
 
       <Section title="Work Experience">
-        <div className="space-y-4">
-          {userData.experience.map((exp, index) => (
-            <div key={exp.id} className="p-4 border border-slate-700 rounded-md relative">
-               <button onClick={() => removeExperience(exp.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-500">
-                  <TrashIcon className="w-5 h-5"/>
-               </button>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Job Title" id={`exp-title-${index}`} name="title" value={exp.title} onChange={(e) => handleChange(e, index, 'experience')} />
-                <Input label="Company" id={`exp-company-${index}`} name="company" value={exp.company} onChange={(e) => handleChange(e, index, 'experience')} />
-                <Input label="Start Date" id={`exp-startDate-${index}`} name="startDate" value={exp.startDate} onChange={(e) => handleChange(e, index, 'experience')} placeholder="e.g., Jan 2020" />
-                <Input label="End Date" id={`exp-endDate-${index}`} name="endDate" value={exp.endDate} onChange={(e) => handleChange(e, index, 'experience')} placeholder="e.g., Present" />
-              </div>
-              <div className="mt-4">
-                <Textarea label="Description / Achievements" id={`exp-description-${index}`} name="description" value={exp.description} onChange={(e) => handleChange(e, index, 'experience')} placeholder="- Led a team of 5 engineers..." />
-              </div>
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={addExperience} className="mt-4 flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
-          <PlusIcon className="w-4 h-4" /> Add Experience
-        </button>
+          <div className="space-y-4">
+              {userData.experience.map((exp, index) => (
+                  <div key={exp.id} className="p-4 bg-slate-800 border border-slate-700 rounded-lg space-y-3 relative">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Input label="Job Title" name="title" value={exp.title} onChange={(e) => handleChange(e, index, 'experience')} placeholder="Software Engineer" />
+                          <Input label="Company" name="company" value={exp.company} onChange={(e) => handleChange(e, index, 'experience')} placeholder="Tech Solutions Inc." />
+                          <Input label="Start Date" name="startDate" value={exp.startDate} onChange={(e) => handleChange(e, index, 'experience')} placeholder="Jan 2021" />
+                          <Input label="End Date" name="endDate" value={exp.endDate} onChange={(e) => handleChange(e, index, 'experience')} placeholder="Present" />
+                      </div>
+                      <Textarea label="Description" name="description" value={exp.description} onChange={(e) => handleChange(e, index, 'experience')} placeholder="- Use bullet points to describe your achievements." />
+                      <button type="button" onClick={() => removeExperience(exp.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400" aria-label="Remove Experience"><TrashIcon className="w-5 h-5" /></button>
+                  </div>
+              ))}
+              <button type="button" onClick={addExperience} className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
+                  <PlusIcon className="w-5 h-5" />
+                  Add Experience
+              </button>
+          </div>
       </Section>
 
       <Section title="Personal Projects">
-        <div className="space-y-4">
-          {userData.projects.map((proj, index) => (
-            <div key={proj.id} className="p-4 border border-slate-700 rounded-md relative">
-               <button onClick={() => removeProject(proj.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-500">
-                  <TrashIcon className="w-5 h-5"/>
-               </button>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Project Name" id={`proj-name-${index}`} name="name" value={proj.name} onChange={(e) => handleChange(e, index, 'projects')} />
-                <Input label="Project URL (Optional)" id={`proj-url-${index}`} name="url" value={proj.url} onChange={(e) => handleChange(e, index, 'projects')} />
-              </div>
-              <div className="mt-4">
-                <Textarea label="Description" id={`proj-description-${index}`} name="description" value={proj.description} onChange={(e) => handleChange(e, index, 'projects')} placeholder="- Developed a web app using React and Firebase..." />
-              </div>
-            </div>
-          ))}
-        </div>
-        <button type="button" onClick={addProject} className="mt-4 flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
-          <PlusIcon className="w-4 h-4" /> Add Project
-        </button>
+          <div className="space-y-4">
+              {userData.projects.map((proj, index) => (
+                  <div key={proj.id} className="p-4 bg-slate-800 border border-slate-700 rounded-lg space-y-3 relative">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <Input label="Project Name" name="name" value={proj.name} onChange={(e) => handleChange(e, index, 'projects')} placeholder="Project Pulse" />
+                          <Input label="Project URL" name="url" value={proj.url} onChange={(e) => handleChange(e, index, 'projects')} placeholder="github.com/user/project" />
+                      </div>
+                      <Textarea label="Description" name="description" value={proj.description} onChange={(e) => handleChange(e, index, 'projects')} placeholder="- Describe what the project does and the technologies used." />
+                      <button type="button" onClick={() => removeProject(proj.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400" aria-label="Remove Project"><TrashIcon className="w-5 h-5" /></button>
+                  </div>
+              ))}
+              <button type="button" onClick={addProject} className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
+                  <PlusIcon className="w-5 h-5" />
+                  Add Project
+              </button>
+          </div>
       </Section>
 
       <Section title="Education">
+          <div className="space-y-4">
+              {userData.education.map((edu, index) => (
+                  <div key={edu.id} className="p-4 bg-slate-800 border border-slate-700 rounded-lg space-y-3 relative">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <Input label="Institution" name="institution" value={edu.institution} onChange={(e) => handleChange(e, index, 'education')} placeholder="University of Technology" />
+                          <Input label="Degree" name="degree" value={edu.degree} onChange={(e) => handleChange(e, index, 'education')} placeholder="B.S. in Computer Science" />
+                          <Input label="Graduation Date" name="gradDate" value={edu.gradDate} onChange={(e) => handleChange(e, index, 'education')} placeholder="May 2018" />
+                      </div>
+                      <button type="button" onClick={() => removeEducation(edu.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400" aria-label="Remove Education"><TrashIcon className="w-5 h-5" /></button>
+                  </div>
+              ))}
+              <button type="button" onClick={addEducation} className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
+                  <PlusIcon className="w-5 h-5" />
+                  Add Education
+              </button>
+          </div>
+      </Section>
+
+      <Section title="References">
         <div className="space-y-4">
-          {userData.education.map((edu, index) => (
-            <div key={edu.id} className="p-4 border border-slate-700 rounded-md relative">
-               <button onClick={() => removeEducation(edu.id)} className="absolute top-2 right-2 text-slate-500 hover:text-red-500">
-                  <TrashIcon className="w-5 h-5"/>
-               </button>
+          {userData.references.map((ref, index) => (
+            <div key={ref.id} className="p-4 bg-slate-800 border border-slate-700 rounded-lg space-y-3 relative">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="Institution" id={`edu-institution-${index}`} name="institution" value={edu.institution} onChange={(e) => handleChange(e, index, 'education')} />
-                <Input label="Degree / Field of Study" id={`edu-degree-${index}`} name="degree" value={edu.degree} onChange={(e) => handleChange(e, index, 'education')} />
-                <Input label="Graduation Date" id={`edu-gradDate-${index}`} name="gradDate" value={edu.gradDate} onChange={(e) => handleChange(e, index, 'education')} placeholder="e.g., May 2018" />
+                <Input label="Reference Name" name="name" value={ref.name} onChange={(e) => handleChange(e, index, 'references')} placeholder="Dr. Emily Carter" />
+                <Input label="Title" name="title" value={ref.title} onChange={(e) => handleChange(e, index, 'references')} placeholder="CTO" />
+                <div className="md:col-span-2">
+                    <Input label="Company" name="company" value={ref.company} onChange={(e) => handleChange(e, index, 'references')} placeholder="Tech Solutions Inc." />
+                </div>
+                <Input label="Email" name="email" value={ref.email} onChange={(e) => handleChange(e, index, 'references')} placeholder="emily.c@techsolutions.com" />
+                <Input label="Phone (Optional)" name="phone" value={ref.phone} onChange={(e) => handleChange(e, index, 'references')} placeholder="(555) 123-4567" />
               </div>
+              <button
+                type="button"
+                onClick={() => removeReference(ref.id)}
+                className="absolute top-2 right-2 text-slate-500 hover:text-red-400"
+                aria-label="Remove Reference"
+              >
+                <TrashIcon className="w-5 h-5" />
+              </button>
             </div>
           ))}
+          <button type="button" onClick={addReference} className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
+            <PlusIcon className="w-5 h-5" />
+            Add Reference
+          </button>
         </div>
-         <button type="button" onClick={addEducation} className="mt-4 flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300">
-          <PlusIcon className="w-4 h-4" /> Add Education
-        </button>
       </Section>
 
       <Section title="Signature">
         <SignaturePad onSignatureChange={handleSignatureChange} />
       </Section>
-
+      
       <button
         onClick={onSubmit}
         disabled={isLoading}
-        className="w-full flex justify-center items-center gap-3 bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+        className="w-full flex justify-center items-center gap-2 bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? (
           <>

@@ -80,7 +80,8 @@ const parseResumeText = (resumeText: string) => {
         'soft skills': [],
         'work experience': [],
         'personal projects': [],
-        education: []
+        education: [],
+        references: [],
     };
     let currentSection: keyof typeof sections | null = null;
 
@@ -90,7 +91,8 @@ const parseResumeText = (resumeText: string) => {
         'soft skills', 
         'work experience', 
         'personal projects', 
-        'education'
+        'education',
+        'references',
     ];
 
     // First two lines are always name and contact
@@ -213,24 +215,23 @@ export const generatePdf = (resumeText: string, userData: UserData, styleName: s
         drawSkills('Soft Skills', userData.softSkills);
 
         // --- Education ---
-        if (sections.education && sections.education.length > 0) {
+        if (userData.education && userData.education.length > 0) {
             doc.setFontSize(fonts.bodyBoldSize);
             doc.setTextColor(colors.sidebarHead!);
             doc.text('EDUCATION', sidebarContentX, sidebarY);
             sidebarY += fonts.bodySize * 1.5;
             
-            sections.education.forEach(edu => {
-                const parts = edu.split('|').map(p => p.trim());
+            userData.education.forEach(edu => {
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(fonts.smallSize);
                 doc.setTextColor(colors.sidebarText!);
-                doc.text(parts[1] || '', sidebarContentX, sidebarY); // Degree
+                doc.text(edu.degree, sidebarContentX, sidebarY);
                 sidebarY += fonts.smallSize * 1.2;
                 
                 doc.setFont('helvetica', 'normal');
-                doc.text(parts[0] || '', sidebarContentX, sidebarY); // Institution
+                doc.text(edu.institution, sidebarContentX, sidebarY);
                 sidebarY += fonts.smallSize * 1.2;
-                doc.text(parts[2] || '', sidebarContentX, sidebarY); // Date
+                doc.text(edu.gradDate, sidebarContentX, sidebarY);
                 sidebarY += fonts.smallSize * 2;
             });
         }
@@ -372,11 +373,11 @@ export const generatePdf = (resumeText: string, userData: UserData, styleName: s
         if (currentProject) projects.push(currentProject);
         projects.forEach(proj => drawEntry(proj));
     }
-    
+
     const drawSkillsAndEducationSingleColumn = () => {
         const hasTechSkills = userData.technicalSkills && userData.technicalSkills.length > 0;
         const hasSoftSkills = userData.softSkills && userData.softSkills.length > 0;
-        const hasEducation = sections.education && sections.education.length > 0;
+        const hasEducation = userData.education && userData.education.length > 0;
 
         if (hasTechSkills) {
             drawSectionTitle('Technical Skills');
@@ -398,22 +399,81 @@ export const generatePdf = (resumeText: string, userData: UserData, styleName: s
         }
         if (hasEducation) {
             drawSectionTitle('Education');
-            sections.education.forEach(edu => {
-                const parts = edu.split('|').map(p => p.trim());
+            userData.education.forEach(edu => {
                 drawEntry({
-                    title: parts[1] || '', // Degree
-                    company: parts[0] || '', // Institution
-                    date: parts[2] || '', // Date
+                    title: edu.degree,
+                    company: edu.institution,
+                    date: edu.gradDate,
                     description: []
                 });
             });
         }
     };
     
-    if(!layout.isTwoColumn) {
-        drawSkillsAndEducationSingleColumn();
-    }
+    const drawReferences = () => {
+        if (userData.references && userData.references.length > 0) {
+            drawSectionTitle('References');
+            userData.references.forEach(ref => {
+                const nameAndTitle = `${ref.name}, ${ref.title} at ${ref.company}`;
+                
+                let contactInfo = ref.email;
+                if (ref.phone) {
+                    contactInfo += ` | ${ref.phone}`;
+                }
 
+                const spaceNeeded = (fonts.bodyBoldSize * 1.5) + (fonts.bodySize * 1.5); // Two lines
+                checkPageBreak(spaceNeeded);
+                
+                // Line 1: Name, Title at Company
+                doc.setFont(fonts.family, 'bold');
+                doc.setFontSize(fonts.bodyBoldSize);
+                doc.setTextColor(colors.mainHead);
+                doc.text(nameAndTitle, MAIN_CONTENT_X, y);
+                y += fonts.bodyBoldSize * 1.5;
+
+                // Line 2: Contact Info (underneath)
+                doc.setFont(fonts.family, 'normal');
+                doc.setFontSize(fonts.bodySize);
+                doc.setTextColor(colors.mainSubhead);
+                doc.text(contactInfo, MAIN_CONTENT_X, y);
+                y += fonts.bodySize * 2; // Add space before the next reference
+            });
+        }
+    };
+
+    if (layout.isTwoColumn) {
+        // For two-column layouts, References are in the main column.
+        // Skills and Education are in the sidebar.
+        drawReferences();
+    } else {
+        // For single-column layouts, draw Skills and Education first.
+        drawSkillsAndEducationSingleColumn();
+        // Then, draw References at the very end.
+        drawReferences();
+        
+        // --- Signature for Single Column ---
+        if (userData.signature) {
+            const sigWidth = 100;
+            const sigHeight = (sigWidth / 150) * 40; // Maintain aspect ratio
+            const sigX = PAGE_MARGIN;
+            const signatureBlockHeight = sigHeight + fonts.smallSize + 10;
+            const sigY = PAGE_HEIGHT - PAGE_MARGIN - signatureBlockHeight;
+
+            // If the current content (`y`) would overlap with the signature, add a new page.
+            if (y > sigY) {
+                addNewPage();
+            }
+
+            doc.addImage(userData.signature, 'PNG', sigX, sigY, sigWidth, sigHeight);
+            doc.setDrawColor(colors.mainSubhead);
+            doc.line(sigX, sigY + sigHeight + 2, sigX + sigWidth, sigY + sigHeight + 2);
+            
+            doc.setFont(fonts.family, 'normal');
+            doc.setFontSize(fonts.smallSize);
+            doc.setTextColor(colors.mainText);
+            doc.text(userData.name, sigX, sigY + sigHeight + fonts.smallSize + 4);
+        }
+    }
 
     doc.save(`${userData.name.replace(' ', '_')}_${styleName}_Resume.pdf`);
 };

@@ -21,6 +21,15 @@ export interface Project {
   description: string;
 }
 
+export interface Reference {
+  id: string;
+  name: string;
+  company: string;
+  title: string;
+  email: string;
+  phone: string;
+}
+
 export interface UserData {
   name: string;
   email: string;
@@ -33,6 +42,7 @@ export interface UserData {
   experience: Experience[];
   education: Education[];
   projects: Project[];
+  references: Reference[];
   signature?: string;
 }
 
